@@ -8,10 +8,14 @@ const Home = () => {
   return (
     <div>
       <Pressable
-        onClick={() => console.log('pressed')}
+        onClick={async () => {
+          await fetch('http://localhost:3000/users')
+            .then((res) => res.json())
+            .then((users) => console.log(users))
+        }}
         bordered
       >
-        Test
+        Get Users
       </Pressable>
     </div>
   )
