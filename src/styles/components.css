@@ -1,0 +1,28 @@
+.pressable {
+    border-radius: 50px;
+    border-width: 0;
+    background-color: var(--button-color);
+    padding: 1em 3em;
+    transition: 0.3s;
+}
+
+.pressable-bordered {
+    border-radius: 50px;
+    border-width: 2;
+    border-style: solid;
+    border-color: var(--button-color);
+    background-color: inherit;
+    padding: 1em 3em;
+    transition: 0.3s;
+}
+
+.pressable:hover {
+    opacity: 0.85;
+    cursor: pointer;
+}
+
+.pressable-bordered:hover {
+    cursor: pointer;
+    opacity: 0.85;
+    background-color: var(--button-color);
+}
