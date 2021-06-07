@@ -12,17 +12,16 @@ const Pressable = ({
     children: ReactChild
     bordered?: boolean
 }) => (
-  <div style={style}>
-    <button
-      className={(bordered) ? 'pressable-bordered' : 'pressable'}
-      onClick={onClick}
-      type="button"
-    >
-      <h2>
-        {children}
-      </h2>
-    </button>
-  </div>
+  <button
+    className={(bordered) ? 'pressable-bordered' : 'pressable'}
+    style={style}
+    onClick={onClick}
+    type="button"
+  >
+    <h2>
+      {children}
+    </h2>
+  </button>
 )
 
 export default Pressable
