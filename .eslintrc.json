@@ -43,7 +43,7 @@
         "semi": [1,"never"],
         "import/extensions": "off",
         "import/no-named-as-default": 0,
-        "no-param-reassign": "warn",
+        "no-param-reassign": "off",
         "consistent-return": "warn",
         "no-unused-vars": "warn",
         "no-plusplus": "warn",
