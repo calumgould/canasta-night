@@ -24,7 +24,7 @@ const Stats = ({
     getUsers()
   }, [])
 
-  const getUsers = () => users.map((user) => (
+  const showUsers = users.map((user) => (
     <Pressable
       key={user.id}
       style={{ margin: 15 }}
@@ -42,7 +42,7 @@ const Stats = ({
       textAlign: 'center'
     }}
     >
-      {getUsers()}
+      {showUsers}
     </div>
   )
 }

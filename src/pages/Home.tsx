@@ -6,7 +6,7 @@ import { Game } from '../Types'
 
 const Home = () => {
   const [player, setPlayer] = useState<string>('')
-  const [game, setGame] = useState<Game>()
+  const [game, setGame] = useState<Partial<Game>>()
 
   const createPlayer = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -36,35 +36,27 @@ const Home = () => {
     }
   }
 
+  const testButtons = ['users', 'games', 'rounds'].map((table) => (
+    <Pressable
+      key={table}
+      onClick={async () => {
+        await axios.get(`http://localhost:8000/${table}`)
+          .then((res) => console.log(res.data))
+      }}
+      style={{ marginRight: 15 }}
+      bordered
+    >
+      {`get ${table}`.capitalizeWords()}
+    </Pressable>
+  ))
+
   return (
     <div>
       <div style={{
         flex: 1, flexDirection: 'row'
       }}
       >
-        <Pressable
-          onClick={async () => {
-            await axios.get('http://localhost:8000/users')
-              .then((res) => res.data)
-              .then((users) => console.log(users))
-          }}
-          style={{ marginRight: 15 }}
-          bordered
-        >
-          Get Users
-        </Pressable>
-
-        <Pressable
-          onClick={async () => {
-            await axios.get('http://localhost:8000/games')
-              .then((res) => res.data)
-              .then((games) => console.log(games))
-          }}
-          bordered
-        >
-          Get Games
-        </Pressable>
-
+        {testButtons}
       </div>
 
       <form onSubmit={createPlayer}>
