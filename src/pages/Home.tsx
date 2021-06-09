@@ -14,7 +14,7 @@ const Home = () => {
     try {
       const response = await axios.post('http://localhost:8000/users', {
         name: player,
-        createdAt: Math.floor(DateTime.now().toSeconds())
+        created_at: Math.floor(DateTime.now().toSeconds())
       })
       console.log(response)
     } catch (error) {
