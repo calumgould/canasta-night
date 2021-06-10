@@ -45,7 +45,7 @@ const GameDetails = ({
         const filteredScores = scores.filter((score: any) => score.round_id === round.id)
         return {
           id: round.id,
-          dealer_id: round.dealer_id,
+          dealer: round.dealer,
           round_number: round.round_number,
           scores: filteredScores
         }
@@ -73,15 +73,20 @@ const GameDetails = ({
   }
 
   const playerNames = gameDetails.players.map((player: string) => (
-    <h4>{player}</h4>
+    <h4 key={player}>{player}</h4>
   ))
 
   const roundDetails = gameDetails.rounds.map((round: any) => (
-    <div style={{ paddingTop: 15, paddingBottom: 15 }}>
-      <h4>
-        Round Number:
+    <div style={{ paddingTop: 15, paddingBottom: 15 }} key={round.id}>
+      <h3>
+        Round:
         {' '}
         {round.round_number}
+      </h3>
+      <h4 style={{ paddingTop: 10, paddingBottom: 10 }}>
+        Dealer:
+        {' '}
+        {round.dealer}
       </h4>
       <h3>Scores</h3>
       {round.scores.map((score: any) => (
