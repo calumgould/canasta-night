@@ -7,10 +7,10 @@ const Pressable = ({
   children,
   bordered = false
 } : {
-    onClick: () => void
-    style?: CSSProperties
-    children: ReactChild
-    bordered?: boolean
+  onClick: () => void
+  style?: CSSProperties
+  children: ReactChild
+  bordered?: boolean
 }) => (
   <button
     className={(bordered) ? 'pressable-bordered' : 'pressable'}

@@ -9,8 +9,8 @@ const Stats = ({
   history,
   location
 } : {
-    history: HistoryProps,
-    location: LocationProps,
+  history: HistoryProps,
+  location: LocationProps,
 }) => {
   const [users, setUsers] = useState<User[]>([])
 
@@ -36,10 +36,10 @@ const Stats = ({
 
   return (
     <div style={{
-      flex: 1,
+      flex:          1,
       flexDirection: 'row',
-      flexWrap: 'wrap',
-      textAlign: 'center'
+      flexWrap:      'wrap',
+      textAlign:     'center'
     }}
     >
       {showUsers}

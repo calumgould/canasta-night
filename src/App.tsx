@@ -8,7 +8,6 @@ import Home from './pages/Home'
 import Error from './pages/Error'
 import Stats from './pages/Stats'
 import UserDetails from './pages/UserDetails'
-import { User } from './Types'
 import Games from './pages/Games'
 import GameDetails from './pages/GameDetails'
 

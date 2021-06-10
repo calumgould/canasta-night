@@ -7,11 +7,11 @@ const Nav = () => (
   <header>
     <div
       style={{
-        margin: '0 auto',
-        padding: '1.45rem 1.0875rem',
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
+        margin:         '0 auto',
+        padding:        '1.45rem 1.0875rem',
+        display:        'flex',
+        flexDirection:  'row',
+        alignItems:     'center',
         justifyContent: 'center'
       }}
     >

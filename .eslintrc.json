@@ -60,6 +60,42 @@
         "no-tabs": "off",
         "jsx-a11y/label-has-associated-control": "off",
         "react/jsx-props-no-spreading": "off",
-        "no-extend-native": "off"
+        "no-extend-native": "off",
+        "react/no-array-index-key": "off",
+        "react/prop-types": "off",
+        "react/display-name": "off",
+        "react/prefer-stateless-function": "off",
+        "class-methods-use-this": 0,
+        "no-throw-literal": "off",
+        "prefer-destructuring": "off",
+        "import/no-cycle": "off",
+        "@typescript-eslint/semi": [1, "never"],
+        "@typescript-eslint/no-use-before-define": "off",
+        "global-require": "off",
+        "key-spacing": [
+          "warn",
+          {
+            "beforeColon": false,
+            "afterColon": true,
+            "mode": "minimum",
+            "align": "value"
+          }
+        ],
+        "@typescript-eslint/indent": ["warn", 2, {
+          "SwitchCase": 1
+        }],
+        "import/no-extraneous-dependencies": "off",
+        "import/prefer-default-export": "off",
+        "react/destructuring-assignment": "off",
+        "react/sort-comp": "off",
+        "getter-return": "off",
+        "react/state-in-constructor" : "off",
+        "no-underscore-dangle": "off",
+        "max-classes-per-file": "off",
+        "react/static-property-placement": "off",
+        "func-names": ["error", "never"],
+        "no-return-assign": ["error","except-parens"],
+        "object-curly-spacing": ["warn", "always"],
+        "no-trailing-spaces": "warn"
     }
 }

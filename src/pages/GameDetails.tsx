@@ -44,10 +44,10 @@ const GameDetails = ({
       const mappedRounds = rounds.map((round: any) => {
         const filteredScores = scores.filter((score: any) => score.round_id === round.id)
         return {
-          id: round.id,
-          dealer: round.dealer,
+          id:           round.id,
+          dealer:       round.dealer,
           round_number: round.round_number,
-          scores: filteredScores
+          scores:       filteredScores
         }
       })
 
@@ -72,8 +72,10 @@ const GameDetails = ({
     return <h1>Loading...</h1>
   }
 
-  const playerNames = gameDetails.players.map((player: string) => (
-    <h4 key={player}>{player}</h4>
+  const playerNames = gameDetails.players.map((player: string, index: number) => (
+    <h4 key={`${player}-${index}`}>
+      {player}
+    </h4>
   ))
 
   const roundDetails = gameDetails.rounds.map((round: any) => (

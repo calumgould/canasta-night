@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 type AppReducer = {
-	username: string
+  username: string
 }
 
 const initialState: AppReducer = {
@@ -9,7 +9,7 @@ const initialState: AppReducer = {
 }
 
 const appSlice = createSlice({
-  name: 'app',
+  name:     'app',
   initialState,
   reducers: {
     loadApp(state, action: PayloadAction<any>) {

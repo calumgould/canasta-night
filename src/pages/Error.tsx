@@ -5,7 +5,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 const Error = () => (
   <div
     style={{
-      flex: 1,
+      flex:      1,
       textAlign: 'center'
     }}
   >

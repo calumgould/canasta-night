@@ -38,10 +38,10 @@ const Games = ({
 
   return (
     <div style={{
-      flex: 1,
+      flex:          1,
       flexDirection: 'row',
-      flexWrap: 'wrap',
-      textAlign: 'center'
+      flexWrap:      'wrap',
+      textAlign:     'center'
     }}
     >
       {showGames}

@@ -4,11 +4,11 @@ import { match } from 'react-router-dom'
 import { History, LocationState, Location } from 'history'
 
 declare global {
-    interface String {
-      capitalizeFirst(): string;
-      capitalizeWords(): string;
-    }
+  interface String {
+    capitalizeFirst(): string;
+    capitalizeWords(): string;
   }
+}
 
 if (typeof String.prototype.capitalizeFirst === 'undefined') {
   String.prototype.capitalizeFirst = function () {
@@ -23,19 +23,19 @@ if (typeof String.prototype.capitalizeWords === 'undefined') {
 }
 
 export type User = {
-    id: number
-    name: string
-    created_at: string
+  id: number
+  name: string
+  created_at: string
 }
 
 export type Game = {
-    id: number
-    timestamp: string
-    title: string
+  id?: number
+  timestamp: string
+  title: string
 }
 
 export interface MatchProps extends match {}
 export interface HistoryProps extends History<LocationState> {}
 export interface LocationProps extends Location {
-    state: any
+  state: any
 }
