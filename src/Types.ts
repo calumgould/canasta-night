@@ -32,6 +32,7 @@ export type Game = {
   id?: number
   timestamp: string
   title: string
+  players: User[]
 }
 
 export interface MatchProps extends match {}

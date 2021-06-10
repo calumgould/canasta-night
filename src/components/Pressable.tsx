@@ -5,18 +5,21 @@ const Pressable = ({
   onClick,
   style,
   children,
-  bordered = false
+  bordered = false,
+  disabled
 } : {
   onClick: () => void
   style?: CSSProperties
   children: ReactChild
   bordered?: boolean
+  disabled?: boolean
 }) => (
   <button
     className={(bordered) ? 'pressable-bordered' : 'pressable'}
-    style={style}
+    style={{ ...style, opacity: disabled ? 0.5 : 1 }}
     onClick={onClick}
     type="button"
+    disabled={disabled}
   >
     <h2>
       {children}

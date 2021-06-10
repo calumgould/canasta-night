@@ -7,16 +7,18 @@
 }
 
 .pressable-bordered {
+    border: 2px solid var(--button-color);
     border-radius: 50px;
-    border-width: 2;
-    border-style: solid;
-    border-color: var(--button-color);
     background-color: inherit;
     padding: 1em 3em;
     transition: 0.3s;
 }
 
-.pressable:hover {
+.pressable-icon {
+    transition: 0.3s;
+}
+
+.pressable:hover, .pressable-icon:hover {
     opacity: 0.85;
     cursor: pointer;
 }
@@ -25,4 +27,12 @@
     cursor: pointer;
     opacity: 0.85;
     background-color: var(--button-color);
+}
+
+.text-input {
+    padding: 10px 20px;
+    border-radius: 50px;
+    border-width: 0;
+    margin: 5px 10px;
+    outline: none
 }

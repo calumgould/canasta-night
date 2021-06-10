@@ -1,20 +1,49 @@
 import axios, { AxiosError } from 'axios'
-import React, { FormEvent, useState } from 'react'
+import React, { FormEvent, useState, useEffect } from 'react'
 import { DateTime } from 'luxon'
 import { useToasts } from 'react-toast-notifications'
 import DatePicker from 'react-datepicker'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import Pressable from '../components/Pressable'
-import { Game } from '../Types'
+import {
+  Game, HistoryProps, LocationProps, User
+} from '../Types'
 import 'react-datepicker/dist/react-datepicker.css'
+import '../styles/components.css'
+import TextInput from '../components/TextInput'
 
-const Home = () => {
+const Home = ({
+  history,
+  location
+} : {
+  history: HistoryProps
+  location: LocationProps
+}) => {
   const { addToast } = useToasts()
 
-  const [player, setPlayer] = useState<string>('')
-  const [game, setGame] = useState<Game>({
+  const initialGameState = {
     title:     '',
-    timestamp: DateTime.now().toISO()
-  })
+    timestamp: DateTime.now().toISO(),
+    players:   []
+  }
+
+  const [player, setPlayer] = useState<string>('')
+  const [game, setGame] = useState<Game>(initialGameState)
+  const [showNewGame, setShowNewGame] = useState<boolean>(false)
+
+  const [users, setUsers] = useState<User[]>([])
+
+  const getUsers = async () => {
+    const fetchedUsers: User[] = await axios.get('http://localhost:8000/users')
+      .then((res) => res.data)
+
+    setUsers(fetchedUsers)
+  }
+
+  useEffect(() => {
+    getUsers()
+  }, [])
 
   const createPlayer = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -24,6 +53,7 @@ const Home = () => {
         name:       player,
         created_at: DateTime.now().toISO()
       })
+      getUsers()
       addToast(response.data, { appearance: 'success' })
       setPlayer('')
     } catch (error) {
@@ -40,63 +70,97 @@ const Home = () => {
         timestamp: game?.timestamp || DateTime.now().toISO(),
         title:     game?.title
       })
-      addToast(response.data, { appearance: 'success' })
-      // setGame({})
+      addToast(`Successfully created game: ${response.data[0].title}`, { appearance: 'success' })
+      setGame({ ...game, ...response.data[0] })
     } catch (error) {
       const axiosError: AxiosError = error
       addToast(axiosError?.response?.data, { appearance: 'error' })
     }
   }
 
-  const testButtons = ['users', 'games', 'rounds'].map((table) => (
+  const showUsers = users.map((user) => (
     <Pressable
-      key={table}
-      onClick={async () => {
-        await axios.get(`http://localhost:8000/${table}`)
-          .then((res) => console.log(res.data))
-      }}
-      style={{ marginRight: 15 }}
-      bordered
+      key={user.id}
+      style={{ margin: 15 }}
+      bordered={!game.players.includes(user)}
+      onClick={() => setGame({ ...game, players: [...game.players, user ] })}
     >
-      {`get ${table}`.capitalizeWords()}
+      {user.name}
     </Pressable>
   ))
 
   return (
     <div>
-      <div style={{
-        flex: 1, flexDirection: 'row'
-      }}
-      >
-        {testButtons}
+      <div style={{ textAlign: 'center', paddingTop: 20 }}>
+        <Pressable
+          onClick={() => setShowNewGame(true)}
+          disabled={showNewGame}
+        >
+          New Game
+        </Pressable>
       </div>
 
-      <form onSubmit={createPlayer}>
-        <label>
-          Player:
-          <input type="text" name="title" value={player} onChange={(e) => setPlayer(e.target.value)} />
-        </label>
-        <input type="submit" value="Add Player" />
-      </form>
-
-      <form onSubmit={createGame}>
-        <label>
-          Title:
-          <input type="text" name="title" value={game?.title} onChange={(e) => setGame({ ...game, title: e.target.value })} />
-        </label>
-        <label>
-          Date:
-          <DatePicker
-            selected={DateTime.fromISO(game.timestamp).toJSDate()}
-            onChange={(date: Date) => setGame({ ...game, timestamp: DateTime.fromJSDate(date).toISO() })}
-            showTimeSelect
-            dateFormat="MMMM d, yyyy h:mm aa"
-            locale="en-GB"
-            onFocus={(e) => e.target.blur()}
+      {showNewGame ? (
+        <div style={{
+          margin:       20,
+          padding:      50,
+          borderStyle:  'solid',
+          borderWidth:  3,
+          borderRadius: 20,
+          borderColor:  'yellowgreen',
+          position:     'relative',
+          textAlign:    'center'
+        }}
+        >
+          <FontAwesomeIcon
+            icon={faTimesCircle}
+            size="1x"
+            color="yellowgreen"
+            style={{ position: 'absolute', top: 20, right: 20 }}
+            className="pressable-icon"
+            onClick={() => {
+              setPlayer('')
+              setGame(initialGameState)
+              setShowNewGame(false)
+            }}
           />
-        </label>
-        <input type="submit" value="Create Game" />
-      </form>
+
+          <h2>
+            Choose Players
+          </h2>
+
+          {showUsers}
+
+          <form onSubmit={createPlayer} style={{ paddingBottom: 20 }}>
+            <TextInput
+              name="title"
+              value={player}
+              onChange={(e) => setPlayer(e.target.value)}
+              placeholder="Create new player"
+            />
+            <input type="submit" value="Create" />
+          </form>
+
+          <form onSubmit={createGame}>
+            <label>
+              Title:
+              <input type="text" name="title" value={game?.title} onChange={(e) => setGame({ ...game, title: e.target.value })} />
+            </label>
+            <label>
+              Date:
+              <DatePicker
+                selected={DateTime.fromISO(game.timestamp).toJSDate()}
+                onChange={(date: Date) => setGame({ ...game, timestamp: DateTime.fromJSDate(date).toISO() })}
+                showTimeSelect
+                dateFormat="MMMM d, yyyy h:mm aa"
+                locale="en-GB"
+                onFocus={(e) => e.target.blur()}
+              />
+            </label>
+            <input type="submit" value="Create Game" />
+          </form>
+        </div>
+      ) : null}
 
     </div>
   )
