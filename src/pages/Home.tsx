@@ -22,14 +22,9 @@ const Home = ({
 }) => {
   const { addToast } = useToasts()
 
-  const initialGameState = {
-    title:     '',
-    timestamp: DateTime.now().toISO(),
-    players:   []
-  }
-
   const [player, setPlayer] = useState<string>('')
-  const [game, setGame] = useState<Game>(initialGameState)
+  const [selectedPlayers, setSelectedPlayers] = useState<User[]>([])
+  const [selectedTime, setSelectedTime] = useState<DateTime>(DateTime.now())
   const [showNewGame, setShowNewGame] = useState<boolean>(false)
 
   const [users, setUsers] = useState<User[]>([])
@@ -62,16 +57,24 @@ const Home = ({
     }
   }
 
-  const createGame = async (event: FormEvent<HTMLFormElement>) => {
+  const createGame = async (event: any) => {
     event.preventDefault()
 
+    const title = event.target[0].value
+    const userIds = selectedPlayers.map((p) => p.id)
+
     try {
-      const response = await axios.post('http://localhost:8000/games', {
-        timestamp: game?.timestamp || DateTime.now().toISO(),
-        title:     game?.title
+      const response = await axios.post('http://localhost:8000/games/new', {
+        timestamp: selectedTime?.toISO() || DateTime.now().toISO(),
+        title,
+        user_ids:  userIds
       })
-      addToast(`Successfully created game: ${response.data[0].title}`, { appearance: 'success' })
-      setGame({ ...game, ...response.data[0] })
+
+      addToast(`Successfully created game: ${response.data[0].title}`, {
+        appearance: 'success'
+      })
+      setSelectedPlayers([])
+      setSelectedTime(DateTime.now())
     } catch (error) {
       const axiosError: AxiosError = error
       addToast(axiosError?.response?.data, { appearance: 'error' })
@@ -82,8 +85,8 @@ const Home = ({
     <Pressable
       key={user.id}
       style={{ margin: 15 }}
-      bordered={!game.players.includes(user)}
-      onClick={() => setGame({ ...game, players: [...game.players, user ] })}
+      bordered={!selectedPlayers.includes(user)}
+      onClick={() => setSelectedPlayers([...selectedPlayers, user])}
     >
       {user.name}
     </Pressable>
@@ -120,7 +123,6 @@ const Home = ({
             className="pressable-icon"
             onClick={() => {
               setPlayer('')
-              setGame(initialGameState)
               setShowNewGame(false)
             }}
           />
@@ -144,16 +146,15 @@ const Home = ({
           <form onSubmit={createGame}>
             <label>
               Title:
-              <input type="text" name="title" value={game?.title} onChange={(e) => setGame({ ...game, title: e.target.value })} />
+              <input type="text" name="title" />
             </label>
             <label>
               Date:
               <DatePicker
-                selected={DateTime.fromISO(game.timestamp).toJSDate()}
-                onChange={(date: Date) => setGame({ ...game, timestamp: DateTime.fromJSDate(date).toISO() })}
+                selected={selectedTime.toJSDate()}
+                onChange={(date: Date) => setSelectedTime(DateTime.fromJSDate(date))}
                 showTimeSelect
                 dateFormat="MMMM d, yyyy h:mm aa"
-                locale="en-GB"
                 onFocus={(e) => e.target.blur()}
               />
             </label>

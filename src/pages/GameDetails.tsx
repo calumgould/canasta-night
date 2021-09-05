@@ -1,7 +1,12 @@
-import axios from 'axios'
+import React, { FormEvent, useEffect, useState } from 'react'
+import axios, { AxiosError } from 'axios'
 import { DateTime } from 'luxon'
-import React, { useEffect, useState } from 'react'
-import { LocationProps, Game } from '../Types'
+import { useToasts } from 'react-toast-notifications'
+import {
+  LocationProps, Game, Round, Score, User
+} from '../Types'
+import '../styles/Table.css'
+import Pressable from '../components/Pressable'
 
 /*
     [{
@@ -29,20 +34,25 @@ const GameDetails = ({
 } : {
   location: LocationProps
 }) => {
-  const { game } : { game: Game } = location.state
+  const { addToast } = useToasts()
 
-  const [gameDetails, setGameDetails] = useState<any>()
+  const [gameDetails, setGameDetails] = useState<Game>()
+
+  const { game } : { game: Game } = location.state
 
   useEffect(() => {
     const getDetails = async () => {
-      const scores = await axios.get(`http://localhost:8000/games/scores/${game.id}`)
+      const scores: Score[] = await axios.get(`http://localhost:8000/games/scores/${game.id}`)
         .then((res) => res.data)
 
-      const rounds = await axios.get(`http://localhost:8000/games/rounds/${game.id}`)
+      const rounds: Round[] = await axios.get(`http://localhost:8000/games/rounds/${game.id}`)
         .then((res) => res.data)
 
-      const mappedRounds = rounds.map((round: any) => {
-        const filteredScores = scores.filter((score: any) => score.round_id === round.id)
+      const totalScores = await axios.get(`http://localhost:8000/games/scores/total/${game.id}`)
+        .then((res) => res.data)
+
+      const mappedRounds = rounds.map((round) => {
+        const filteredScores = scores.filter((score) => score.round_id === round.id)
         return {
           id:           round.id,
           dealer:       round.dealer,
@@ -51,13 +61,17 @@ const GameDetails = ({
         }
       })
 
-      const players = await axios.get(`http://localhost:8000/games/users/${game.id}`)
-        .then((res) => res.data.map((player: { name: string }) => player.name))
+      const players: User[] = await axios.get(`http://localhost:8000/games/users/${game.id}`)
+        .then((res) => res.data.map((player: User) => ({
+          id:   player.id,
+          name: player.name
+        })))
 
       const fullDetails = {
         ...game,
         players,
-        rounds: mappedRounds
+        rounds: mappedRounds,
+        totalScores
       }
 
       console.log({ fullDetails })
@@ -72,47 +86,121 @@ const GameDetails = ({
     return <h1>Loading...</h1>
   }
 
-  const playerNames = gameDetails.players.map((player: string, index: number) => (
-    <h4 key={`${player}-${index}`}>
-      {player}
-    </h4>
+  const playerNames = gameDetails.players.map((player) => (
+    <th key={`${player.id}`}>
+      {player.name}
+    </th>
   ))
 
-  const roundDetails = gameDetails.rounds.map((round: any) => (
-    <div style={{ paddingTop: 15, paddingBottom: 15 }} key={round.id}>
-      <h3>
-        Round:
-        {' '}
+  const roundDetails = gameDetails.rounds.map((round) => (
+    <tr key={round.id}>
+      <td>
         {round.round_number}
-      </h3>
-      <h4 style={{ paddingTop: 10, paddingBottom: 10 }}>
-        Dealer:
-        {' '}
+      </td>
+      <td>
         {round.dealer}
-      </h4>
-      <h3>Scores</h3>
-      {round.scores.map((score: any) => (
-        <h4>
-          {score.name}
-          {' '}
-          :
-          {' '}
+      </td>
+      {round.scores.map((score) => (
+        <td key={score.id}>
           {score.score}
-        </h4>
+        </td>
       ))}
-    </div>
+      {}
+    </tr>
   ))
+
+  const addRound = async (event: any) => {
+    event.preventDefault()
+
+    const dealer = event.target[1].value
+    const dealerId = gameDetails.players.find((p) => p.name === dealer)?.id
+
+    const scores = gameDetails.players.map((p, index: number) => ({
+      user_id:    p.id,
+      score:      parseInt(event.target[index + 2].value, 10),
+      extra_data: {
+        fourRedThrees: false,
+        concealed:     false
+      }
+    }))
+
+    try {
+      const response = await axios.post('http://localhost:8000/rounds/new', {
+        game_id:      gameDetails.id,
+        dealer_id:    dealerId,
+        round_number: (gameDetails.rounds.length + 1),
+        scores
+      })
+
+      addToast(`Successfully added round: ${response.data[0].title}`, { appearance: 'success' })
+    } catch (error) {
+      const axiosError: AxiosError = error
+      addToast(axiosError?.response?.data, { appearance: 'error' })
+    }
+  }
+
+  const newRoundRow = (
+    <tr>
+      <td>
+        <input type="submit" value="+ New Round" form="newRoundForm" />
+      </td>
+      <td>
+        <select
+          name="dealer"
+          form="newRoundForm"
+          required
+        >
+          {gameDetails.players.map((player) => (
+            <option key={player.id} value={player.name}>{player.name}</option>
+          ))}
+        </select>
+      </td>
+      {gameDetails.players.map((player) => (
+        <td key={player.id}>
+          <input
+            type="text"
+            name={player.name}
+            form="newRoundForm"
+            required
+          />
+        </td>
+      ))}
+    </tr>
+  )
+
+  const buildTable = (
+    <table>
+      <thead>
+        <tr>
+          <th>Round</th>
+          <th>Dealer</th>
+          {playerNames}
+        </tr>
+      </thead>
+      <tbody>
+        {roundDetails}
+        {newRoundRow}
+        <tr>
+          <th colSpan={2}>Total</th>
+          {gameDetails.totalScores.map((score) => (
+            <td key={score.user_id}>{score.total_score}</td>
+          ))}
+        </tr>
+      </tbody>
+    </table>
+  )
 
   return (
     <div>
+
+      <form method="POST" id="newRoundForm" onSubmit={addRound} />
+
       <h1>{gameDetails.title}</h1>
       <h2>{DateTime.fromISO(gameDetails.timestamp).toLocaleString()}</h2>
       <h3>{gameDetails.id}</h3>
-      <div style={{ paddingTop: 15, paddingBottom: 15 }}>
-        <h3>Players:</h3>
-        {playerNames}
-      </div>
-      {roundDetails}
+
+      {buildTable}
+
     </div>
   )
 }

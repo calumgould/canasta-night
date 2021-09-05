@@ -96,6 +96,7 @@
         "func-names": ["error", "never"],
         "no-return-assign": ["error","except-parens"],
         "object-curly-spacing": ["warn", "always"],
-        "no-trailing-spaces": "warn"
+        "no-trailing-spaces": "warn",
+        "no-unreachable": "off"
     }
 }

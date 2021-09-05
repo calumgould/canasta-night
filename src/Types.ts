@@ -28,11 +28,37 @@ export type User = {
   created_at: string
 }
 
+export type ExtraData = {
+  concealed: boolean
+  fourRedThrees: boolean
+}
+
+export type Score = {
+  id: string
+  name: string
+  round_id: string
+  score: number
+  extraData: ExtraData
+}
+
+export type Round = {
+  id: string
+  dealer: string
+  round_number: number
+  scores: Score[]
+}
+
 export type Game = {
   id?: number
   timestamp: string
   title: string
-  players: User[]
+  players: User[],
+  rounds: Round[]
+  totalScores: {
+    name: string
+    total_score: number
+    user_id: string
+  }[]
 }
 
 export interface MatchProps extends match {}
