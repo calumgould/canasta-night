@@ -2,7 +2,7 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import Pressable from '../components/Pressable'
 import {
-  HistoryProps, LocationProps, User
+  HistoryProps, LocationProps, Player
 } from '../Types'
 
 const Stats = ({
@@ -12,25 +12,25 @@ const Stats = ({
   history: HistoryProps,
   location: LocationProps,
 }) => {
-  const [users, setUsers] = useState<User[]>([])
+  const [players, setPlayers] = useState<Player[]>([])
 
   useEffect(() => {
-    const getUsers = async () => {
-      const fetchedUsers: User[] = await axios.get('http://localhost:8000/users')
+    const getPlayers = async () => {
+      const fetchedPlayers: Player[] = await axios.get('http://localhost:8000/players')
         .then((res) => res.data)
 
-      setUsers(fetchedUsers)
+      setPlayers(fetchedPlayers)
     }
-    getUsers()
+    getPlayers()
   }, [])
 
-  const showUsers = users.map((user) => (
+  const showPlayers = players.map((p) => (
     <Pressable
-      key={user.id}
+      key={p.id}
       style={{ margin: 15 }}
-      onClick={() => history.push(`${location.pathname}/${user.id}`, { user })}
+      onClick={() => history.push(`${location.pathname}/${p.id}`, { p })}
     >
-      {user.name}
+      {p.name}
     </Pressable>
   ))
 
@@ -42,7 +42,7 @@ const Stats = ({
       textAlign:     'center'
     }}
     >
-      {showUsers}
+      {showPlayers}
     </div>
   )
 }

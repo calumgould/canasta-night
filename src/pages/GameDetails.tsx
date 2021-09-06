@@ -1,12 +1,11 @@
-import React, { FormEvent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios, { AxiosError } from 'axios'
 import { DateTime } from 'luxon'
 import { useToasts } from 'react-toast-notifications'
 import {
-  LocationProps, Game, Round, Score, User
+  LocationProps, Game, Round, Score, Player
 } from '../Types'
 import '../styles/Table.css'
-import Pressable from '../components/Pressable'
 
 /*
     [{
@@ -61,8 +60,8 @@ const GameDetails = ({
         }
       })
 
-      const players: User[] = await axios.get(`http://localhost:8000/games/users/${game.id}`)
-        .then((res) => res.data.map((player: User) => ({
+      const players: Player[] = await axios.get(`http://localhost:8000/games/players/${game.id}`)
+        .then((res) => res.data.map((player: Player) => ({
           id:   player.id,
           name: player.name
         })))
@@ -115,8 +114,8 @@ const GameDetails = ({
     const dealer = event.target[1].value
     const dealerId = gameDetails.players.find((p) => p.name === dealer)?.id
 
-    const scores = gameDetails.players.map((p, index: number) => ({
-      user_id:    p.id,
+    const scores = gameDetails.players.map((player, index: number) => ({
+      player_id:  player.id,
       score:      parseInt(event.target[index + 2].value, 10),
       extra_data: {
         fourRedThrees: false,
@@ -132,7 +131,7 @@ const GameDetails = ({
         scores
       })
 
-      addToast(`Successfully added round: ${response.data[0].title}`, { appearance: 'success' })
+      addToast(`${response.data}`, { appearance: 'success' })
     } catch (error) {
       const axiosError: AxiosError = error
       addToast(axiosError?.response?.data, { appearance: 'error' })
@@ -183,7 +182,7 @@ const GameDetails = ({
         <tr>
           <th colSpan={2}>Total</th>
           {gameDetails.totalScores.map((score) => (
-            <td key={score.user_id}>{score.total_score}</td>
+            <td key={score.player_id}>{score.total_score}</td>
           ))}
         </tr>
       </tbody>

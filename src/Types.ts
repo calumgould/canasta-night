@@ -22,7 +22,7 @@ if (typeof String.prototype.capitalizeWords === 'undefined') {
   }
 }
 
-export type User = {
+export type Player = {
   id: number
   name: string
   created_at: string
@@ -52,12 +52,12 @@ export type Game = {
   id?: number
   timestamp: string
   title: string
-  players: User[],
+  players: Player[],
   rounds: Round[]
   totalScores: {
     name: string
     total_score: number
-    user_id: string
+    player_id: string
   }[]
 }
 

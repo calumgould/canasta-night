@@ -1,4 +1,3 @@
-import './styles/App.css'
 import React from 'react'
 import {
   Route, BrowserRouter as Router, Switch
@@ -7,22 +6,22 @@ import Nav from './components/Nav'
 import Home from './pages/Home'
 import Error from './pages/Error'
 import Stats from './pages/Stats'
-import UserDetails from './pages/UserDetails'
+import PlayerDetails from './pages/PlayerDetails'
 import Games from './pages/Games'
 import GameDetails from './pages/GameDetails'
 
-export default function App() {
-  return (
-    <Router>
-      <Nav />
-      <Switch>
-        <Route exact path="/" component={Home} />
-        <Route path="/stats/:id" component={(props: any) => <UserDetails {...props} />} />
-        <Route path="/stats" component={Stats} />
-        <Route path="/games/:id" component={GameDetails} />
-        <Route path="/games" component={Games} />
-        <Route component={Error} />
-      </Switch>
-    </Router>
-  )
-}
+const App = () => (
+  <Router>
+    <Nav />
+    <Switch>
+      <Route exact path="/" component={Home} />
+      <Route path="/stats/:id" component={(props: any) => <PlayerDetails {...props} />} />
+      <Route path="/stats" component={Stats} />
+      <Route path="/games/:id" component={GameDetails} />
+      <Route path="/games" component={Games} />
+      <Route component={Error} />
+    </Switch>
+  </Router>
+)
+
+export default App

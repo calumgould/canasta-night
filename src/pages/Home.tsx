@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import Pressable from '../components/Pressable'
 import {
-  Game, HistoryProps, LocationProps, User
+  Game, HistoryProps, LocationProps, Player
 } from '../Types'
 import 'react-datepicker/dist/react-datepicker.css'
 import '../styles/components.css'
@@ -23,32 +23,32 @@ const Home = ({
   const { addToast } = useToasts()
 
   const [player, setPlayer] = useState<string>('')
-  const [selectedPlayers, setSelectedPlayers] = useState<User[]>([])
+  const [selectedPlayers, setSelectedPlayers] = useState<Player[]>([])
   const [selectedTime, setSelectedTime] = useState<DateTime>(DateTime.now())
   const [showNewGame, setShowNewGame] = useState<boolean>(false)
 
-  const [users, setUsers] = useState<User[]>([])
+  const [players, setPlayers] = useState<Player[]>([])
 
-  const getUsers = async () => {
-    const fetchedUsers: User[] = await axios.get('http://localhost:8000/users')
+  const getPlayers = async () => {
+    const fetchedPlayers: Player[] = await axios.get('http://localhost:8000/players')
       .then((res) => res.data)
 
-    setUsers(fetchedUsers)
+    setPlayers(fetchedPlayers)
   }
 
   useEffect(() => {
-    getUsers()
+    getPlayers()
   }, [])
 
   const createPlayer = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     try {
-      const response = await axios.post('http://localhost:8000/users', {
+      const response = await axios.post('http://localhost:8000/players', {
         name:       player,
         created_at: DateTime.now().toISO()
       })
-      getUsers()
+      getPlayers()
       addToast(response.data, { appearance: 'success' })
       setPlayer('')
     } catch (error) {
@@ -61,13 +61,13 @@ const Home = ({
     event.preventDefault()
 
     const title = event.target[0].value
-    const userIds = selectedPlayers.map((p) => p.id)
+    const playerIds = selectedPlayers.map((p) => p.id)
 
     try {
       const response = await axios.post('http://localhost:8000/games/new', {
-        timestamp: selectedTime?.toISO() || DateTime.now().toISO(),
+        timestamp:  selectedTime?.toISO() || DateTime.now().toISO(),
         title,
-        user_ids:  userIds
+        player_ids: playerIds
       })
 
       addToast(`Successfully created game: ${response.data[0].title}`, {
@@ -81,14 +81,14 @@ const Home = ({
     }
   }
 
-  const showUsers = users.map((user) => (
+  const showPlayers = players.map((p) => (
     <Pressable
-      key={user.id}
+      key={p.id}
       style={{ margin: 15 }}
-      bordered={!selectedPlayers.includes(user)}
-      onClick={() => setSelectedPlayers([...selectedPlayers, user])}
+      bordered={!selectedPlayers.includes(p)}
+      onClick={() => setSelectedPlayers([...selectedPlayers, p])}
     >
-      {user.name}
+      {p.name}
     </Pressable>
   ))
 
@@ -131,7 +131,7 @@ const Home = ({
             Choose Players
           </h2>
 
-          {showUsers}
+          {showPlayers}
 
           <form onSubmit={createPlayer} style={{ paddingBottom: 20 }}>
             <TextInput

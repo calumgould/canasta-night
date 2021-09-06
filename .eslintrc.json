@@ -27,6 +27,7 @@
           }
         }
     },
+    "ignorePatterns": "package.json",
     "rules": {
         "react/jsx-filename-extension": "off",
         "comma-dangle": ["error", "never"],
