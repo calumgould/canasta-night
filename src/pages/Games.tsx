@@ -18,7 +18,7 @@ const Games = ({
 
   useEffect(() => {
     const getGames = async () => {
-      const fetchedGames: Game[] = await axios.get('http://localhost:8000/games')
+      const fetchedGames: Game[] = await axios.get(`${process.env.REACT_APP_BASE_URL}/games`)
         .then((res) => res.data)
 
       setGames(fetchedGames)

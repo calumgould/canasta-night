@@ -16,7 +16,7 @@ const Stats = ({
 
   useEffect(() => {
     const getPlayers = async () => {
-      const fetchedPlayers: Player[] = await axios.get('http://localhost:8000/players')
+      const fetchedPlayers: Player[] = await axios.get(`${process.env.REACT_APP_BASE_URL}/players`)
         .then((res) => res.data)
 
       setPlayers(fetchedPlayers)

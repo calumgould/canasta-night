@@ -41,13 +41,13 @@ const GameDetails = ({
 
   useEffect(() => {
     const getDetails = async () => {
-      const scores: Score[] = await axios.get(`http://localhost:8000/games/scores/${game.id}`)
+      const scores: Score[] = await axios.get(`${process.env.REACT_APP_BASE_URL}/games/scores/${game.id}`)
         .then((res) => res.data)
 
-      const rounds: Round[] = await axios.get(`http://localhost:8000/games/rounds/${game.id}`)
+      const rounds: Round[] = await axios.get(`${process.env.REACT_APP_BASE_URL}/games/rounds/${game.id}`)
         .then((res) => res.data)
 
-      const totalScores = await axios.get(`http://localhost:8000/games/scores/total/${game.id}`)
+      const totalScores = await axios.get(`${process.env.REACT_APP_BASE_URL}/games/scores/total/${game.id}`)
         .then((res) => res.data)
 
       const mappedRounds = rounds.map((round) => {
@@ -60,7 +60,7 @@ const GameDetails = ({
         }
       })
 
-      const players: Player[] = await axios.get(`http://localhost:8000/games/players/${game.id}`)
+      const players: Player[] = await axios.get(`${process.env.REACT_APP_BASE_URL}/games/players/${game.id}`)
         .then((res) => res.data.map((player: Player) => ({
           id:   player.id,
           name: player.name
@@ -124,7 +124,7 @@ const GameDetails = ({
     }))
 
     try {
-      const response = await axios.post('http://localhost:8000/rounds/new', {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/rounds/new`, {
         game_id:      gameDetails.id,
         dealer_id:    dealerId,
         round_number: (gameDetails.rounds.length + 1),

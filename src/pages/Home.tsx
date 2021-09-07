@@ -30,7 +30,7 @@ const Home = ({
   const [players, setPlayers] = useState<Player[]>([])
 
   const getPlayers = async () => {
-    const fetchedPlayers: Player[] = await axios.get('http://localhost:8000/players')
+    const fetchedPlayers: Player[] = await axios.get(`${process.env.REACT_APP_BASE_URL}/players`)
       .then((res) => res.data)
 
     setPlayers(fetchedPlayers)
@@ -44,7 +44,7 @@ const Home = ({
     event.preventDefault()
 
     try {
-      const response = await axios.post('http://localhost:8000/players', {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/players`, {
         name:       player,
         created_at: DateTime.now().toISO()
       })
@@ -64,10 +64,10 @@ const Home = ({
     const playerIds = selectedPlayers.map((p) => p.id)
 
     try {
-      const response = await axios.post('http://localhost:8000/games/new', {
-        timestamp:  selectedTime?.toISO() || DateTime.now().toISO(),
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/games`, {
         title,
-        player_ids: playerIds
+        timestamp:  selectedTime?.toISO() || DateTime.now().toISO(),
+        playerIds
       })
 
       addToast(`Successfully created game: ${response.data[0].title}`, {
