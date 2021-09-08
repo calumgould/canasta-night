@@ -12,7 +12,7 @@ const PlayerDetails = ({
   return (
     <div>
       <h1>{player.name}</h1>
-      <h2>{DateTime.fromISO(player.created_at).toLocaleString()}</h2>
+      <h2>{DateTime.fromISO(player.createdAt).toLocaleString()}</h2>
       <h3>{player.id}</h3>
     </div>
   )

@@ -39,43 +39,16 @@ const GameDetails = ({
 
   const { game } : { game: Game } = location.state
 
+  console.log({ game })
+
   useEffect(() => {
     const getDetails = async () => {
-      const scores: Score[] = await axios.get(`${process.env.REACT_APP_BASE_URL}/games/scores/${game.id}`)
+      const details: any = await axios.get(`${process.env.REACT_APP_BASE_URL}/games/${game.id}`)
         .then((res) => res.data)
 
-      const rounds: Round[] = await axios.get(`${process.env.REACT_APP_BASE_URL}/games/rounds/${game.id}`)
-        .then((res) => res.data)
+      console.log({ details })
 
-      const totalScores = await axios.get(`${process.env.REACT_APP_BASE_URL}/games/scores/total/${game.id}`)
-        .then((res) => res.data)
-
-      const mappedRounds = rounds.map((round) => {
-        const filteredScores = scores.filter((score) => score.round_id === round.id)
-        return {
-          id:           round.id,
-          dealer:       round.dealer,
-          round_number: round.round_number,
-          scores:       filteredScores
-        }
-      })
-
-      const players: Player[] = await axios.get(`${process.env.REACT_APP_BASE_URL}/games/players/${game.id}`)
-        .then((res) => res.data.map((player: Player) => ({
-          id:   player.id,
-          name: player.name
-        })))
-
-      const fullDetails = {
-        ...game,
-        players,
-        rounds: mappedRounds,
-        totalScores
-      }
-
-      console.log({ fullDetails })
-
-      setGameDetails(fullDetails)
+      setGameDetails(details)
     }
 
     getDetails()

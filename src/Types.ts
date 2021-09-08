@@ -25,7 +25,7 @@ if (typeof String.prototype.capitalizeWords === 'undefined') {
 export type Player = {
   id: number
   name: string
-  created_at: string
+  createdAt: string
 }
 
 export type ExtraData = {

@@ -24,13 +24,13 @@ const Stats = ({
     getPlayers()
   }, [])
 
-  const showPlayers = players.map((p) => (
+  const showPlayers = players.map((player) => (
     <Pressable
-      key={p.id}
+      key={player.id}
       style={{ margin: 15 }}
-      onClick={() => history.push(`${location.pathname}/${p.id}`, { p })}
+      onClick={() => history.push(`${location.pathname}/${player.id}`, { player })}
     >
-      {p.name}
+      {player.name}
     </Pressable>
   ))
 
