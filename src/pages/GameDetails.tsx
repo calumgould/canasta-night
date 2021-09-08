@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
 import { DateTime } from 'luxon'
 import { useToasts } from 'react-toast-notifications'
 import {
@@ -133,8 +133,7 @@ const GameDetails = ({
 
       addToast(`${response.data}`, { appearance: 'success' })
     } catch (error) {
-      const axiosError: AxiosError = error
-      addToast(axiosError?.response?.data, { appearance: 'error' })
+      addToast(error?.response?.data?.error?.message, { appearance: 'error' })
     }
   }
 

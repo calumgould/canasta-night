@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
 import React, { FormEvent, useState, useEffect } from 'react'
 import { DateTime } from 'luxon'
 import { useToasts } from 'react-toast-notifications'
@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import Pressable from '../components/Pressable'
 import {
-  Game, HistoryProps, LocationProps, Player
+  HistoryProps, LocationProps, Player
 } from '../Types'
 import 'react-datepicker/dist/react-datepicker.css'
 import '../styles/components.css'
@@ -44,16 +44,17 @@ const Home = ({
     event.preventDefault()
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/players`, {
-        name:       player,
-        created_at: DateTime.now().toISO()
+      await axios.post(`${process.env.REACT_APP_BASE_URL}/players`, {
+        name:      player,
+        createdAt: DateTime.now().toISO()
       })
       getPlayers()
-      addToast(response.data, { appearance: 'success' })
+
+      addToast(`Added player: ${player}`, { appearance: 'success' })
+
       setPlayer('')
     } catch (error) {
-      const axiosError: AxiosError = error
-      addToast(axiosError?.response?.data, { appearance: 'error' })
+      addToast(error?.response?.data?.error?.message, { appearance: 'error' })
     }
   }
 
@@ -64,20 +65,18 @@ const Home = ({
     const playerIds = selectedPlayers.map((p) => p.id)
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/games`, {
+      await axios.post(`${process.env.REACT_APP_BASE_URL}/games`, {
         title,
         timestamp:  selectedTime?.toISO() || DateTime.now().toISO(),
         playerIds
       })
 
-      addToast(`Successfully created game: ${response.data[0].title}`, {
-        appearance: 'success'
-      })
+      addToast(`Created game: ${title}`, { appearance: 'success' })
+
       setSelectedPlayers([])
       setSelectedTime(DateTime.now())
     } catch (error) {
-      const axiosError: AxiosError = error
-      addToast(axiosError?.response?.data, { appearance: 'error' })
+      addToast(error?.response?.data?.error?.message, { appearance: 'error' })
     }
   }
 
