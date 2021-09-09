@@ -23,7 +23,7 @@ if (typeof String.prototype.capitalizeWords === 'undefined') {
 }
 
 export type Player = {
-  id: number
+  id: string
   name: string
   createdAt: string
 }
@@ -36,7 +36,7 @@ export type ExtraData = {
 export type Score = {
   id: string
   name: string
-  round_id: string
+  roundId: string
   score: number
   extraData: ExtraData
 }
@@ -44,20 +44,20 @@ export type Score = {
 export type Round = {
   id: string
   dealer: string
-  round_number: number
+  roundNumber: number
   scores: Score[]
 }
 
 export type Game = {
-  id?: number
+  id?: string
   timestamp: string
   title: string
   players: Player[],
   rounds: Round[]
   totalScores: {
     name: string
-    total_score: number
-    player_id: string
+    totalScore: number
+    playerId: string
   }[]
 }
 

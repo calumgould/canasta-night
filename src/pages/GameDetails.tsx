@@ -39,18 +39,16 @@ const GameDetails = ({
 
   const { game } : { game: Game } = location.state
 
-  console.log({ game })
+  const getDetails = async () => {
+    const details: any = await axios.get(`${process.env.REACT_APP_BASE_URL}/games/${game.id}`)
+      .then((res) => res.data)
+
+    console.log({ details })
+
+    setGameDetails(details)
+  }
 
   useEffect(() => {
-    const getDetails = async () => {
-      const details: any = await axios.get(`${process.env.REACT_APP_BASE_URL}/games/${game.id}`)
-        .then((res) => res.data)
-
-      console.log({ details })
-
-      setGameDetails(details)
-    }
-
     getDetails()
   }, [])
 
@@ -67,17 +65,20 @@ const GameDetails = ({
   const roundDetails = gameDetails.rounds.map((round) => (
     <tr key={round.id}>
       <td>
-        {round.round_number}
+        {round.roundNumber}
       </td>
       <td>
         {round.dealer}
       </td>
-      {round.scores.map((score) => (
-        <td key={score.id}>
-          {score.score}
-        </td>
-      ))}
-      {}
+      {gameDetails.players.map((player) => {
+        const score = (round.scores.find((entry) => entry.name === player.name))
+
+        return (
+          <td key={score?.id}>
+            {score?.score}
+          </td>
+        )
+      })}
     </tr>
   ))
 
@@ -88,23 +89,24 @@ const GameDetails = ({
     const dealerId = gameDetails.players.find((p) => p.name === dealer)?.id
 
     const scores = gameDetails.players.map((player, index: number) => ({
-      player_id:  player.id,
-      score:      parseInt(event.target[index + 2].value, 10),
-      extra_data: {
+      playerId:  player.id,
+      score:     parseInt(event.target[index + 2].value, 10),
+      extraData: {
         fourRedThrees: false,
         concealed:     false
       }
     }))
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/rounds/new`, {
-        game_id:      gameDetails.id,
-        dealer_id:    dealerId,
-        round_number: (gameDetails.rounds.length + 1),
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/rounds`, {
+        gameId:      gameDetails.id,
+        dealerId,
+        roundNumber: (gameDetails.rounds.length + 1),
         scores
       })
 
       addToast(`${response.data}`, { appearance: 'success' })
+      getDetails()
     } catch (error) {
       addToast(error?.response?.data?.error?.message, { appearance: 'error' })
     }
@@ -153,9 +155,13 @@ const GameDetails = ({
         {newRoundRow}
         <tr>
           <th colSpan={2}>Total</th>
-          {gameDetails.totalScores.map((score) => (
-            <td key={score.player_id}>{score.total_score}</td>
-          ))}
+          {gameDetails.players.map((player) => {
+            const totalScore = gameDetails.totalScores.find((entry) => entry.playerId === player.id)?.totalScore
+
+            return (
+              <td key={player.id}>{totalScore}</td>
+            )
+          })}
         </tr>
       </tbody>
     </table>
