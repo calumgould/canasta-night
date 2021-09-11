@@ -65,6 +65,10 @@ const Home = ({
     const playerIds = selectedPlayers.map((p) => p.id)
 
     try {
+      if (selectedPlayers.length < 2) {
+        throw new Error('A game must have at least 2 players')
+      }
+
       await axios.post(`${process.env.REACT_APP_BASE_URL}/games`, {
         title,
         timestamp:  selectedTime?.toISO() || DateTime.now().toISO(),
@@ -72,11 +76,11 @@ const Home = ({
       })
 
       addToast(`Created game: ${title}`, { appearance: 'success' })
-
       setSelectedPlayers([])
       setSelectedTime(DateTime.now())
     } catch (error) {
-      addToast(error?.response?.data?.error?.message, { appearance: 'error' })
+      addToast(error?.response?.data?.error?.message || error?.message, { appearance: 'error' })
+      setSelectedPlayers([])
     }
   }
 
@@ -85,7 +89,17 @@ const Home = ({
       key={p.id}
       style={{ margin: 15 }}
       bordered={!selectedPlayers.includes(p)}
-      onClick={() => setSelectedPlayers([...selectedPlayers, p])}
+      onClick={() => {
+        const alreadySelected = selectedPlayers.find((selected) => selected.id === p.id)
+
+        if (alreadySelected) {
+          const filteredPlayers = selectedPlayers.filter((selected) => selected.id !== alreadySelected.id)
+
+          setSelectedPlayers(filteredPlayers)
+        } else {
+          setSelectedPlayers([...selectedPlayers, p])
+        }
+      }}
     >
       {p.name}
     </Pressable>
@@ -161,7 +175,6 @@ const Home = ({
           </form>
         </div>
       ) : null}
-
     </div>
   )
 }

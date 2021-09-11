@@ -22,6 +22,10 @@ if (typeof String.prototype.capitalizeWords === 'undefined') {
   }
 }
 
+export type RecursivePartial<T> = {
+  [P in keyof T]?: RecursivePartial<T[P]>;
+}
+
 export type Player = {
   id: string
   name: string
@@ -37,6 +41,7 @@ export type Score = {
   id: string
   name: string
   roundId: string
+  playerId: string
   score: number
   extraData: ExtraData
 }
@@ -52,13 +57,14 @@ export type Game = {
   id?: string
   timestamp: string
   title: string
-  players: Player[],
+  players: Player[]
   rounds: Round[]
   totalScores: {
     name: string
     totalScore: number
     playerId: string
   }[]
+  winner: Player | undefined
 }
 
 export interface MatchProps extends match {}

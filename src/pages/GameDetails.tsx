@@ -2,31 +2,12 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { DateTime } from 'luxon'
 import { useToasts } from 'react-toast-notifications'
+import Select from 'react-select'
+import makeAnimated from 'react-select/animated'
 import {
-  LocationProps, Game, Round, Score, Player
+  LocationProps, Game, ExtraData
 } from '../Types'
 import '../styles/Table.css'
-
-/*
-    [{
-        id: number
-        timestamp: number
-        title: string
-        players: string[]
-        rounds: [{
-            round: number
-            dealer: string
-            scores: [{
-                player: string
-                score: number
-                extra_data: {
-                    concealed: boolean
-                    fourRedThrees: boolean
-                }
-            }]
-        }]
-    }]
-*/
 
 const GameDetails = ({
   location
@@ -36,8 +17,24 @@ const GameDetails = ({
   const { addToast } = useToasts()
 
   const [gameDetails, setGameDetails] = useState<Game>()
+  const [extraData, setExtraData] = useState<{[key in string] : Partial<ExtraData>} | null>()
+
+  const animatedComponents = makeAnimated()
 
   const { game } : { game: Game } = location.state
+
+  const extraDataOptions = [{
+    label: 'Concealed',
+    value: 'concealed'
+  }, {
+    label: 'Four Red Threes',
+    value: 'fourRedThrees'
+  }]
+
+  const extraDataAbbreviation: {[key in keyof ExtraData] : string} = {
+    fourRedThrees: '4RT',
+    concealed:     'C'
+  }
 
   const getDetails = async () => {
     const details: any = await axios.get(`${process.env.REACT_APP_BASE_URL}/games/${game.id}`)
@@ -73,9 +70,12 @@ const GameDetails = ({
       {gameDetails.players.map((player) => {
         const score = (round.scores.find((entry) => entry.name === player.name))
 
+        const extra = (Object.keys(score?.extraData!) as (keyof ExtraData)[])
+
         return (
           <td key={score?.id}>
             {score?.score}
+            {extra.map((key) => `(${extraDataAbbreviation[key]})`)}
           </td>
         )
       })}
@@ -90,11 +90,9 @@ const GameDetails = ({
 
     const scores = gameDetails.players.map((player, index: number) => ({
       playerId:  player.id,
+      // score for each player at index after dealer
       score:     parseInt(event.target[index + 2].value, 10),
-      extraData: {
-        fourRedThrees: false,
-        concealed:     false
-      }
+      extraData: extraData?.[player.id] || {}
     }))
 
     try {
@@ -107,6 +105,7 @@ const GameDetails = ({
 
       addToast(`${response.data}`, { appearance: 'success' })
       getDetails()
+      setExtraData(null)
     } catch (error) {
       addToast(error?.response?.data?.error?.message, { appearance: 'error' })
     }
@@ -123,9 +122,11 @@ const GameDetails = ({
           form="newRoundForm"
           required
         >
-          {gameDetails.players.map((player) => (
-            <option key={player.id} value={player.name}>{player.name}</option>
-          ))}
+          {gameDetails.players
+            .filter((player) => player.name !== gameDetails?.rounds[gameDetails?.rounds?.length - 1]?.dealer)
+            .map((player) => (
+              <option key={player.id} value={player.name}>{player.name}</option>
+            ))}
         </select>
       </td>
       {gameDetails.players.map((player) => (
@@ -135,6 +136,36 @@ const GameDetails = ({
             name={player.name}
             form="newRoundForm"
             required
+          />
+
+          <label htmlFor="extraData">Extra</label>
+          <Select
+            isMulti
+            name="extraData"
+            components={animatedComponents}
+            isClearable
+            defaultValue={extraData}
+            onChange={(selectedOptions) => {
+              const data = selectedOptions?.reduce((
+                acc: {[key: string] : boolean },
+                curr: { label: string, value: string }
+              ) => ({
+                ...acc,
+                [curr.value]: true
+              }), {})
+
+              setExtraData({
+                ...extraData,
+                [player.id]: data
+              })
+            }}
+            options={extraDataOptions}
+            styles={{
+              option: (existingStyles) => ({
+                ...existingStyles,
+                color: 'black'
+              })
+            }}
           />
         </td>
       ))}
@@ -152,14 +183,16 @@ const GameDetails = ({
       </thead>
       <tbody>
         {roundDetails}
-        {newRoundRow}
+        {gameDetails.winner ? null : newRoundRow}
         <tr>
           <th colSpan={2}>Total</th>
           {gameDetails.players.map((player) => {
             const totalScore = gameDetails.totalScores.find((entry) => entry.playerId === player.id)?.totalScore
 
             return (
-              <td key={player.id}>{totalScore}</td>
+              <td key={player.id}>
+                {totalScore}
+              </td>
             )
           })}
         </tr>
@@ -177,6 +210,14 @@ const GameDetails = ({
       <h3>{gameDetails.id}</h3>
 
       {buildTable}
+
+      {gameDetails.winner ? (
+        <h1>
+          {gameDetails.winner.name}
+          {' '}
+          wins!
+        </h1>
+      ) : null}
 
     </div>
   )
